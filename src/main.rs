@@ -42,14 +42,17 @@ struct Game {
 
 
 fn main() {
+    // init the terminal
     crossterm::terminal::enable_raw_mode().unwrap();
+    // clear terminal before drawing the game 
     execute!(
         stdout(),
         Clear(ClearType::All),
         cursor::MoveTo(0,0))
         .unwrap();
    // println!("Hello, world!");
-   let mut game= Game::new_game();
+   let mut game= Game::new_game(); 
+   //Main game loop
    while !game.gameover {
         game.handle_input();
         game.game_update();
@@ -62,7 +65,7 @@ fn main() {
 
 // Function to calculate the next step for the snake.
 fn calc_next_step(direction: Direction, snake_head:Point,width:u16,height:u16) ->Point{
-    
+   // learning the match format for direction enum 
     match direction {
     Direction::Down => {
     if snake_head.y == height - 1{
@@ -140,6 +143,7 @@ impl Food {
             y:rng.random_range(0..height),
         };
         while iscannibal(&new_pos, snake) {
+            // shoulda called it something else but iscannibal is fun
             new_pos = Point {
                 x: rng.random_range(0..width),
                 y: rng.random_range(0..height),
@@ -162,21 +166,24 @@ impl Snake {
 
 
 impl Game {
+    // Main game cycle
     fn game_update(&mut self){//-> bool {
-        let new_pos = calc_next_step(self.direction,self.snake.body[0],self.width,self.height);
-        if iscannibal(&new_pos,&self.snake) {
+        let new_pos = calc_next_step(self.direction,self.snake.body[0],self.width,self.height);//newpos
+                                                                                        
+        if iscannibal(&new_pos,&self.snake) {//check if eating self 
             self.gameover = true;
             return;
         }
 
-            let eating = iseating(new_pos,&self.food);
-            self.snake.update_snake(new_pos,eating);
-            if eating {
+            let eating = iseating(new_pos,&self.food);//check if on food 
+            self.snake.update_snake(new_pos,eating);//update pos 
+            if eating {//update score if eating 
                 self.score += 1;
                 self.food.gen_food(&self.snake,self.width,self.height);
             }
 
     }
+    // complicated, learning events/keyinputs
     fn handle_input(&mut self) {
        if event::poll(std::time::Duration::from_millis(0)).unwrap(){
         let event = event::read().unwrap();
@@ -215,6 +222,7 @@ impl Game {
        }
 
     }
+    // creates a new game 
     fn new_game() -> Game {
         let width = 40;
         let height = 25;
@@ -235,13 +243,14 @@ impl Game {
             gameover:false,
     }
     }
+    // drawing function 
     fn draw(&self) {
     // crossterm to move cursor
     let mut stdout = stdout();
     execute!(
         stdout,
         cursor::MoveTo(0,0),
-    )//Clear(ClearType::All))
+    )//Clear(ClearType::All)) // don't need to clear terminal each time 
         .unwrap();
     //
     for y in 0..self.height {
@@ -258,8 +267,8 @@ impl Game {
             }
         }
     
-        print!("\r\n");
+        print!("\r\n");//makes sure returns to the start of the line on newline 
         }
-    stdout.flush().unwrap();
+    stdout.flush().unwrap();// makes sure buffer returns 
     }
 }
