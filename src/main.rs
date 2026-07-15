@@ -260,8 +260,10 @@ impl Game {
                 print!("O");
             } else if p == self.food.location {
                 print!("*");
-            } else if p.x == 0 || p.x == self.width-1 || p.y == 0 || p.y == self.height - 1 {
-                print!("#")
+            } else if p.x == 0 || p.x == self.width-1 {
+                print!("|")
+            } else if p.y == 0 || p.y == self.height - 1 {
+                print!("-")
             } else {
                 print!(" ");
             }
