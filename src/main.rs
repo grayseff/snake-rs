@@ -59,6 +59,7 @@ fn main() {
         game.draw();
         sleep(Duration::from_millis(130));
    }
+   crossterm::terminal::disable_raw_mode().unwrap();
    println!("Game Over! Your Score Was {}", game.score);
    // game.game_over_screen();
 }
